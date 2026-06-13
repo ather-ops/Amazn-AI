@@ -1,5 +1,7 @@
 # Amazn-AI
 
+![Amazn-AI](https://github.com/ather-ops/Amazn-AI/blob/main/Assets/Amazn.png)
+
 Your SMART product finder AI agent.
 
 ## What is this?
