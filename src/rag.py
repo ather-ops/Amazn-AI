@@ -1,24 +1,30 @@
-# Step 1: Imports
 import faiss
-import pandas as pd
 import json
+
 from sentence_transformers import SentenceTransformer
-from src.llm  import ask_amazon as generate_answer
-from src.paths import(
+from src.llm import ask_amazon as generate_answer
+from src.paths import (
     FAISS_INDEX_PATH,
     DOCUMENTS_PATH,
     METADATA_PATH
 )
+
 index = faiss.read_index(str(FAISS_INDEX_PATH))
-with open(DOCUMENTS_PATH,"rb", encoding="utf-8") as f:
-    documents=json.load(f)
-metadata=pd.read_pickle(METADATA_PATH)
-model=SentenceTransformer("all-MiniLM-L6-v2")
-print(index.ntotal)
-print(len(documents))
+
+with open(DOCUMENTS_PATH, "r", encoding="utf-8") as f:
+    documents = json.load(f)
+with open(METADATA_PATH, "r", encoding="utf-8") as f:
+    metadata = json.load(f)
+
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def retrieve_queries(query, top_k=5):
-    query_embd = model.encode([query]).astype("float32")
+    query_embd = model.encode(
+        [query],
+        convert_to_numpy=True
+    ).astype("float32")
+    faiss.normalize_L2(query_embd)
     distances, indices = index.search(query_embd, top_k)
     results = []
     for score, idx in zip(distances[0], indices[0]):
@@ -26,9 +32,10 @@ def retrieve_queries(query, top_k=5):
             continue
         results.append({
             "document": documents[idx],
-            "metadata": metadata.iloc[idx].to_dict(),
-            "distance": float(score),
+            "metadata": metadata[idx],
+            "distance": float(score)
         })
+
     return results
 
 def ask_amazn(query):
