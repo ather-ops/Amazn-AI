@@ -30,7 +30,11 @@ def retrieve_product_queries(query, top_k=5):
         convert_to_numpy=True
     ).astype("float32")
     faiss.normalize_L2(query_embd)
-    distances, indices = index.search(query_embd, top_k)
+    distances, indices = index.search(
+        query_embd,
+        top_k
+    )
+
     results = []
     for score, idx in zip(distances[0], indices[0]):
         if idx == -1:
@@ -42,11 +46,10 @@ def retrieve_product_queries(query, top_k=5):
         })
 
     return results
-
-# ask Product Rag
+# Ask product retrive
 def ask_product_rag(query):
     results = retrieve_product_queries(query)
-    context = "\n\n -- \n\n".join(
+    context = "\n\n---\n\n".join(
         f"""{r["document"]}
 Product ID   : {r["metadata"].get("product_id")}
 Product Link : {r["metadata"].get("product_link")}
@@ -54,32 +57,47 @@ Product Img  : {r["metadata"].get("img_link")}
 """
         for r in results
     )
-    return generate_answer(query, context)
+    answer = generate_answer(
+        query,
+        context
+    )
+    return answer
+# Support RAG retrieval
 
-# test product rag
-query="Suggest a Samsung Type C cable"
-print(ask_product_rag(query))
+def retrieve_support_queries(query, top_k=5):
+    query_embed = model.encode(
+        [query],
+        convert_to_numpy=True
+    ).astype("float32")
 
-# service rag retrival
-def retrive_service_quires(query,top_k=5):
-    query_embed=model.encode([query],convert_to_numpy=True).astype("float32")
     faiss.normalize_L2(query_embed)
-    distances,indices=support_index.search(query_embed,top_k)
-    results=[]
-    for  score,idx in zip(distances[0],indices[0]):
+    distances, indices = support_index.search(
+        query_embed,
+        top_k
+    )
+    results = []
+    for score, idx in zip(distances[0], indices[0]):
         if idx == -1:
             continue
         results.append({
-            "chunks":support_chunks[idx],
-            "distances":float(score)
+            "chunk": support_chunks[idx],
+            "distance": float(score)
         })
     return results
-# Test the servicebRag
+
+
+# Ask Support RAG
 def ask_service_rag(query):
-    results = retrive_service_quires(query)
+    results = retrieve_support_queries(query)
     context = "\n\n---\n\n".join(
-        f"""Source: Support PDF, Page {r["chunk"]["page"]}{r["chunk"]["text"]}
+        f"""Source: Support PDF
+Page: {r["chunk"]["page"]}
+{r["chunk"]["text"]}
 """
         for r in results
     )
-    return generate_answer(query, context)
+    answer = generate_answer(
+        query,
+        context
+    )
+    return answer
