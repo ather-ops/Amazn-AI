@@ -1,45 +1,36 @@
-from src.vectordb import (
-    load_langchain_embedding,
-    load_vector_store,
-    similarity_search,
+from src.rag import ask_service_rag
+import sys
+from pathlib import Path
+import streamlit as st
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.append(str(PROJECT_ROOT))
+st.set_page_config(
+    page_title="Amazn AI",
+    page_icon="♾️"
 )
 
-from src.prompt import load_prompt
-from src.llm import load_llm
-from src.utils import (
-    print_heading,
-    print_search_results,
+st.title("Amazn AI")
+st.write(
+    "Your smart Amazon product finder "
+    "and customer support AI assistant."
 )
-from src.config import VECTOR_STORE_PATH
-def main():
-    print_heading("AMAZN AI MODULE TEST")
-    # Load Embedding Model
-    embedding_model = load_langchain_embedding()
-    print("Embedding Model Loaded")
-    # Load Vector Store
-    vector_store = load_vector_store(
-        VECTOR_STORE_PATH,
-        embedding_model
-    )
-    print("Vector Store Loaded")
-    # Similarity Search
-    results = similarity_search(
-        vector_store,
-        query="gaming laptop",
-        k=3
-    )
-    print_heading("Top Results")
-    print_search_results(results)
-    # Prompt
-    print_heading("Prompt")
-    print("Prompt Loaded Successfully")
-    print(type(load_prompt))
-    # Gemini
-    llm = load_llm()
-    print_heading("LLM")
-    print("Gemini Loaded Successfully")
-    print(type(llm))
-    print_heading("ALL MODULES WORKING SUCCESSFULLY")
 
-if __name__ == "__main__":
-    main()
+query = st.text_input(
+    "Ask Amazn AI something!",
+    placeholder="Ask a customer support question...."
+)
+
+if st.button("Ask support"):
+
+    if not query.strip():
+        st.warning("First enter what you want!")
+    else:
+        try:
+            with st.spinner("Amazn  is thinking..."):
+                answer = ask_service_rag(query)
+            st.write(answer)
+
+        except Exception as e:
+            st.error("Something went wrong. Please try again.")
+            st.error(e)

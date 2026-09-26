@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 import streamlit as st
-from src.rag import ask_amazn
+from src.rag import ask_product_rag
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.append(str(PROJECT_ROOT))
@@ -28,7 +28,7 @@ if st.button("Find Products"):
     else:
         try:
             with st.spinner("Amazn  is thinking..."):
-                answer = ask_amazn(query)
+                answer = ask_product_rag(query)
 
             st.write(answer)
 
