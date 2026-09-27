@@ -1,49 +1,46 @@
-import sys
-from pathlib import Path
-PROJECT_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
 import streamlit as st
-import time
-start = time.time()
 from src.agent import amazn_agent
-st.write(f"Import time: {time.time() - start:.1f}s")
 
 st.set_page_config(
     page_title="Amazn AI",
-    page_icon="♾️",
-    layout="centered"
+    page_icon="♾️"
 )
+
 st.title("♾️ Amazn AI")
-st.caption("Your smart Amazon product finder and customer support AI assistant")
+st.caption("Amazon product and customer support assistant")
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-query = st.text_input(
-    "Ask Amazn AI something!",
-    placeholder="Ask about product recommendations..."
+if st.button("Clear Chat"):
+    st.session_state.messages = []
+    st.rerun()
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+query = st.chat_input(
+    "Ask about products, orders, returns, refunds..."
 )
 
-col1, col2 = st.columns([1, 4])
-with col1:
-    go = st.button("Get result", use_container_width=True)
+if query:
+    st.session_state.messages.append(
+        {"role": "user", "content": query}
+    )
 
-if go:
-    if not query.strip():
-        st.warning("First enter what you want!")
-    else:
-        try:
-            with st.spinner("Amazn is thinking..."):
+    with st.chat_message("user"):
+        st.markdown(query)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
                 answer = amazn_agent.run(query)
-
-            st.success("Answer ready")
-            with st.container(border=True):
                 st.markdown(answer)
+            except Exception as e:
+                answer = f"Error: {e}"
+                st.error(answer)
 
-            with st.expander("Show query details"):
-                st.write("**Query:**", query)
-
-        except Exception as e:
-            st.error(f"Something went wrong: {e}")
-
-st.divider()
-st.caption("Built with Streamlit • Powered by Groq + smolagents")
+    st.session_state.messages.append(
+        {"role": "assistant", "content": answer}
+    )
