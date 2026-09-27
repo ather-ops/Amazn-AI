@@ -1,37 +1,49 @@
 import sys
 from pathlib import Path
-import streamlit as st
-from src.rag import ask_product_rag
-
 PROJECT_ROOT = Path(__file__).resolve().parent
-sys.path.append(str(PROJECT_ROOT))
+sys.path.insert(0, str(PROJECT_ROOT))
+
+import streamlit as st
+import time
+start = time.time()
+from src.agent import amazn_agent
+st.write(f"Import time: {time.time() - start:.1f}s")
+
 st.set_page_config(
     page_title="Amazn AI",
-    page_icon="♾️"
+    page_icon="♾️",
+    layout="centered"
 )
+st.title("♾️ Amazn AI")
+st.caption("Your smart Amazon product finder and customer support AI assistant")
 
-st.title("Amazn AI")
-st.write(
-    "Your smart Amazon product finder "
-    "and customer support AI assistant."
-)
 
 query = st.text_input(
     "Ask Amazn AI something!",
     placeholder="Ask about product recommendations..."
 )
 
-if st.button("Find Products"):
+col1, col2 = st.columns([1, 4])
+with col1:
+    go = st.button("Get result", use_container_width=True)
 
+if go:
     if not query.strip():
         st.warning("First enter what you want!")
     else:
         try:
-            with st.spinner("Amazn  is thinking..."):
-                answer = ask_product_rag(query)
+            with st.spinner("Amazn is thinking..."):
+                answer = amazn_agent.run(query)
 
-            st.write(answer)
+            st.success("Answer ready")
+            with st.container(border=True):
+                st.markdown(answer)
+
+            with st.expander("Show query details"):
+                st.write("**Query:**", query)
 
         except Exception as e:
-            st.error("Something went wrong. Please try again.")
-            print(f"Amazon AI error: {e}")
+            st.error(f"Something went wrong: {e}")
+
+st.divider()
+st.caption("Built with Streamlit • Powered by Groq + smolagents")
