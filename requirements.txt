@@ -9,3 +9,5 @@ numpy
 pandas
 pymupdf
 tenacity
+gspread
+google-auth

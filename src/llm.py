@@ -9,7 +9,7 @@ client=Groq(
 def ask_amazon(query, context):
 
     system_prompt = """
-You are Amazon AI, a helpful and professional product
+You are Amazn AI, a helpful and professional product
 assistant.
 Your job is to answer customer questions using the
 provided product context.

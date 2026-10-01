@@ -6,7 +6,7 @@ st.set_page_config(
     page_icon="♾️"
 )
 
-st.title("♾️ Amazn AI")
+st.title("Amazn AI")
 st.caption("Amazon product and customer support assistant")
 
 if "messages" not in st.session_state:
