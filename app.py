@@ -1,5 +1,5 @@
 import streamlit as st
-from src.agent import amazn_agent
+from src.agent import run_agent
 
 st.set_page_config(
     page_title="Amazn AI",
@@ -35,7 +35,7 @@ if query:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                answer = amazn_agent.run(query)
+                answer = run_agent(query)
                 st.markdown(answer)
             except Exception as e:
                 answer = f"Error: {e}"
