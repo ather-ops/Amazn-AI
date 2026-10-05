@@ -5,297 +5,80 @@
 <h1 align="center">Amazn AI</h1>
 
 <p align="center">
-  An AI-powered Amazon customer support assistant built with RAG, FAISS, Sentence Transformers, and an agent-based architecture.
+  An agentic AI customer-support assistant powered by RAG, semantic search, and live order lookup.
 </p>
+
+<p align="center">
+  Product RAG &nbsp;|&nbsp; Support RAG &nbsp;|&nbsp; Google Sheets Order Lookup &nbsp;|&nbsp; smolagents
+</p>
+
+---
+
+## Live Demo
+
+Amazn AI is deployed and available as a live Streamlit application.
+
+Live App: Amazn AI
 
 ---
 
 ## Overview
 
-Amazn AI is an end-to-end **Retrieval-Augmented Generation (RAG)** application designed to provide intelligent assistance for Amazon product discovery and customer-support questions.
+Amazn AI is an end-to-end agentic AI application designed to handle Amazon-style product and customer-support queries through multiple specialized tools.
 
-Instead of relying only on keyword search, the system uses semantic search to retrieve relevant information from dedicated knowledge bases and uses an AI agent to decide which tool should handle the user's request.
+Instead of using a single retrieval pipeline for every question, Amazn AI uses a `smolagents` CodeAgent to determine which tool should handle the user's request.
 
-The project currently supports:
+The current system provides three core capabilities:
 
-* Amazon product search
-* Customer-support knowledge retrieval
-* Natural-language product queries
-* Return and refund-related questions
-* Agent-based routing between RAG tools
+1. Product discovery using Product RAG
+2. Customer-support assistance using Support RAG
+3. Live order information using Google Sheets
 
-The project is being developed as a practical AI Engineering project covering the complete workflow from data preparation and embeddings to vector search, RAG, agent orchestration, and deployment.
+The project demonstrates how multiple AI tools can be combined into a single conversational application.
 
 ---
 
-## Features
-
-### 🛍️ Product RAG
-
-* Semantic search over Amazon product data
-* Natural-language product queries
-* Sentence Transformers embeddings
-* FAISS vector similarity search
-* Product metadata retrieval
-* LLM-generated responses based on retrieved products
-
-Example:
-
-```text
-Find the best products under ₹4,000
-```
-
----
-
-### 🎧 Customer Support RAG
-
-A separate support knowledge base is used for customer-service questions.
-
-The support RAG pipeline includes:
-
-* PDF document ingestion
-* Page-aware text extraction
-* Text cleaning
-* Fixed-size chunking with overlap
-* Sentence Transformers embeddings
-* FAISS vector search
-* Retrieved context passed to the LLM
-
-Example:
-
-```text
-I got a damaged product. Can I return it?
-```
-
----
-
-### 🤖 AI Agent
-
-A `smolagents` CodeAgent acts as the orchestration layer between the user and the RAG tools.
-
-Currently available tools:
-
-```text
-Product Search
-     ↓
-Product RAG
-
-Support Search
-     ↓
-Support RAG
-```
-
-The agent analyzes the user's request and selects the appropriate tool.
-
----
-
-## Architecture
-
-```text
-                         User
-                           │
-                           ▼
-                    Streamlit Chat UI
-                           │
-                           ▼
-                    smolagents Agent
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-              ▼                         ▼
-       Product Search             Support Search
-              │                         │
-              ▼                         ▼
-         Product RAG               Support RAG
-              │                         │
-              ▼                         ▼
-        FAISS Index                FAISS Index
-              │                         │
-              └────────────┬────────────┘
-                           │
-                           ▼
-                      LLM Response
-                           │
-                           ▼
-                          User
-```
-
----
-
-## RAG Pipeline
+## Key Features
 
 ### Product RAG
 
-```text
-Amazon Product Dataset
-        ↓
-Data Cleaning
-        ↓
-Product Documents
-        ↓
-Sentence Transformers
-        ↓
-Embeddings
-        ↓
-FAISS Index
-        ↓
-Semantic Retrieval
-        ↓
-Retrieved Product Context
-        ↓
-LLM
-        ↓
-Answer
-```
+A semantic product-search system built over an Amazon product dataset.
 
-### Support RAG
+The pipeline includes:
 
-```text
-Amazon Support PDF
-        ↓
-Page-aware Text Extraction
-        ↓
-Text Cleaning
-        ↓
-Chunking
-        ↓
-Sentence Transformers
-        ↓
-Embeddings
-        ↓
-FAISS Index
-        ↓
-Semantic Retrieval
-        ↓
-Retrieved Support Context
-        ↓
-LLM
-        ↓
-Answer
-```
+* Product data cleaning
+* Product document creation
+* Sentence Transformers embeddings
+* FAISS vector search
+* Semantic retrieval
+* LLM-generated responses
 
----
-
-## Tech Stack
-
-### Core
-
-* Python
-* Pandas
-* NumPy
-
-### RAG
-
-* Sentence Transformers
-* FAISS
-* PyMuPDF
-
-### AI / LLM
-
-* Groq
-* LiteLLM
-* smolagents
-
-### Application
-
-* Streamlit
-
-### Development
-
-* Jupyter Notebook
-* Git & GitHub
-
----
-
-## Project Structure
-
-```text
-Amazn-AI/
-│
-├── Assets/
-│   └── Amazn.png
-│
-├── data/
-│   ├── raw/
-│   │   ├── amazon.csv
-│   │   └── Amazon-Support.pdf
-│   │
-│   └── cleaned/
-│       └── amazon_cleaned.csv
-│
-├── notebooks/
-│   ├── product-rag/
-│   │   └── EDA.ipynb
-│   │
-│   └── support-rag/
-│       └── Support-RAG.ipynb
-│
-├── src/
-│   ├── agent.py
-│   ├── llm.py
-│   ├── paths.py
-│   └── rag.py
-│
-├── vector_store/
-│   ├── product_index.faiss
-│   ├── product_documents.json
-│   ├── product_metadata.json
-│   ├── support_index.faiss
-│   └── support_chunks.json
-│
-├── app.py
-├── README.md
-└── requirements.txt
-```
-
----
-
-## Current Project Status
-
-### Completed
-
-* [x] Product dataset exploration
-* [x] Product data cleaning
-* [x] Product document creation
-* [x] Product embeddings
-* [x] Product FAISS index
-* [x] Product RAG pipeline
-* [x] Support PDF extraction
-* [x] Support text cleaning
-* [x] Support document chunking
-* [x] Support embeddings
-* [x] Support FAISS index
-* [x] Support RAG pipeline
-* [x] Product RAG agent tool
-* [x] Support RAG agent tool
-* [x] smolagents agent routing
-* [x] Streamlit application
-
-### In Progress
-
-* [ ] Google Sheets order lookup
-* [ ] Order lookup agent tool
-* [ ] Multi-tool agent testing
-* [ ] Final production deployment improvements
-
----
-
-## Example Queries
-
-### Product Search
+Example query:
 
 ```text
 Find the best products under ₹4,000
 ```
 
-```text
-Show me highly rated products for the kitchen
-```
+---
 
-### Customer Support
+### Support RAG
+
+A dedicated customer-support RAG pipeline built over a 134-page Amazon-style support knowledge base.
+
+The pipeline includes:
+
+* PDF text extraction using PyMuPDF
+* Page-aware document processing
+* Text cleaning
+* Fixed-size chunking with overlap
+* Sentence Transformers embeddings
+* FAISS similarity search
+* Retrieved-context generation
+
+Example queries:
 
 ```text
-I got a damaged product. Can I return it?
+I received a damaged product. Can I return it?
 ```
 
 ```text
@@ -306,55 +89,413 @@ How can I return a product?
 How long does a refund take?
 ```
 
+The support knowledge base used in this project is a compiled Amazon-style reference document and should not be treated as an official or live Amazon policy source.
+
 ---
 
-## Future Architecture
+### Google Sheets Order Lookup
 
-The planned final version will extend the agent with a live, read-only order lookup tool using Google Sheets.
+A read-only Google Sheets integration provides live order information to the agent.
+
+The order tool can retrieve information such as:
+
+* Order ID
+* Customer name
+* Product ID
+* Product name
+* Order date
+* Order status
+* Expected delivery
+* Payment status
+* Delivery address
+* Tracking ID
+
+Example:
+
+```text
+Where is my order ORD1026?
+```
+
+The agent can retrieve the order directly from the connected Google Sheet instead of relying on static RAG data.
+
+---
+
+## Agentic Architecture
+
+The central component of Amazn AI is a `smolagents` CodeAgent.
 
 ```text
                          User
-                           │
-                           ▼
+                           |
+                           v
                     Streamlit Chat UI
-                           │
-                           ▼
+                           |
+                           v
                     smolagents Agent
-                           │
-        ┌──────────────────┼──────────────────┐
-        │                  │                  │
-        ▼                  ▼                  ▼
-   Product RAG        Support RAG       Order Lookup
-        │                  │                  │
-        ▼                  ▼                  ▼
-   Product Data       Support PDF       Google Sheets
-        │                  │                  │
-        └──────────────────┼──────────────────┘
-                           │
-                           ▼
-                       LLM Response
+                           |
+          +----------------+----------------+
+          |                |                |
+          v                v                v
+   Product Search    Support Search    Order Lookup
+          |                |                |
+          v                v                v
+      Product RAG       Support RAG     Google Sheets
+          |                |                |
+          v                v                v
+     FAISS Index       FAISS Index      Live Orders
+          |                |                |
+          +----------------+----------------+
+                           |
+                           v
+                      LLM Response
+                           |
+                           v
+                          User
 ```
 
-This will allow Amazn AI to handle questions involving products, customer support, and order information through a single conversational interface.
+The agent decides which tool to use based on the user's request.
+
+This allows Amazn AI to move beyond a single-purpose RAG chatbot toward a multi-tool AI system.
 
 ---
 
-## Project Goal
+## Multi-Tool Reasoning
 
-The goal of Amazn AI is to build a practical **AI Engineering / LLM Engineering application** that demonstrates:
+Amazn AI can combine tools when a question requires information from multiple sources.
+
+For example:
+
+```text
+Where is order ORD1026 and can I return the product?
+```
+
+The agent can use:
+
+```text
+Google Sheets
+     |
+     | Order information
+     v
+Order Lookup
+
+        +
+
+Support RAG
+     |
+     | Return information
+     v
+Support Knowledge Base
+```
+
+The retrieved information can then be combined into a single conversational response.
+
+---
+
+## RAG Architecture
+
+### Product RAG
+
+```text
+Amazon Product Dataset
+        |
+        v
+Data Cleaning
+        |
+        v
+Product Documents
+        |
+        v
+Sentence Transformers
+        |
+        v
+Embeddings
+        |
+        v
+FAISS Index
+        |
+        v
+Semantic Retrieval
+        |
+        v
+Retrieved Product Context
+        |
+        v
+LLM
+        |
+        v
+Final Response
+```
+
+### Support RAG
+
+```text
+Support PDF
+        |
+        v
+PDF Text Extraction
+        |
+        v
+Text Cleaning
+        |
+        v
+Chunking
+        |
+        v
+Sentence Transformers
+        |
+        v
+Embeddings
+        |
+        v
+FAISS Index
+        |
+        v
+Semantic Retrieval
+        |
+        v
+Retrieved Support Context
+        |
+        v
+LLM
+        |
+        v
+Final Response
+```
+
+---
+
+## Technology Stack
+
+### Programming
+
+* Python
+* Pandas
+* NumPy
+
+### Retrieval and RAG
+
+* Sentence Transformers
+* FAISS
+* PyMuPDF
+
+### Agent and LLM
+
+* smolagents
+* LiteLLM
+* Groq
+
+### Google Integration
+
+* gspread
+* Google Authentication
+* Google Sheets API
+
+### Application
+
+* Streamlit
+
+### Development
+
+* Jupyter Notebook
+* Git
+* GitHub
+
+---
+
+## Project Structure
+
+```text
+Amazn-AI/
+|
+├── Assets/
+|   └── Amazn.png
+|
+├── data/
+|   ├── raw/
+|   |   ├── amazon.csv
+|   |   └── Amazon-Support.pdf
+|   |
+|   └── cleaned/
+|       └── amazon_cleaned.csv
+|
+├── notebooks/
+|   ├── product-rag/
+|   |   └── EDA.ipynb
+|   |
+|   └── support-rag/
+|       └── Support-RAG.ipynb
+|
+├── src/
+|   ├── agent.py
+|   ├── llm.py
+|   ├── orders.py
+|   ├── paths.py
+|   └── rag.py
+|
+├── vector_store/
+|   ├── product_index.faiss
+|   ├── product_documents.json
+|   ├── product_metadata.json
+|   ├── support_index.faiss
+|   └── support_chunks.json
+|
+├── app.py
+├── README.md
+└── requirements.txt
+```
+
+---
+
+## Environment Variables
+
+Amazn AI requires environment configuration for the LLM and Google Sheets integration.
+
+```env
+GROQ_API_KEY=your_groq_api_key
+
+GOOGLE_CREDENTIALS_PATH=path/to/service-account.json
+
+GOOGLE_SHEET_ID=your_google_sheet_id
+```
+
+Google Sheets access is configured with read-only permissions.
+
+Credentials should never be committed to the repository.
+
+---
+
+## Running Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ather-ops/Amazn-AI.git
+cd Amazn-AI
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Windows Git Bash:
+
+```bash
+source .venv/Scripts/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Configure the required environment variables and Google service-account credentials.
+
+Run the Streamlit application:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Development Journey
+
+The project was built incrementally as an AI Engineering learning project.
+
+### Phase 1: Product RAG
+
+* Explored the Amazon product dataset
+* Cleaned product data
+* Created product documents
+* Generated embeddings
+* Built a FAISS vector index
+* Implemented semantic retrieval
+* Connected retrieval with an LLM
+
+### Phase 2: Support RAG
+
+* Loaded the support PDF
+* Extracted page-aware text
+* Cleaned document content
+* Implemented chunking
+* Generated embeddings
+* Built a support FAISS index
+* Implemented support retrieval
+* Connected support retrieval with the LLM
+
+### Phase 3: Agentic Architecture
+
+* Introduced `smolagents`
+* Created the Product Search tool
+* Created the Support Search tool
+* Implemented agent-based tool routing
+* Added Google Sheets integration
+* Created the Order Lookup tool
+* Connected all three tools to the agent
+
+### Phase 4: Deployment
+
+* Built the Streamlit chat application
+* Configured production dependencies
+* Connected Google Sheets securely
+* Deployed the application to Streamlit Cloud
+* Tested the complete multi-tool workflow
+
+---
+
+## Current Status
+
+Amazn AI is complete and deployed.
+
+```text
+Product RAG             Complete
+Support RAG             Complete
+Google Sheets Tool      Complete
+smolagents Agent        Complete
+Streamlit Application   Complete
+Deployment              Complete
+```
+
+The project is now considered a completed end-to-end AI Engineering project.
+
+---
+
+## What This Project Demonstrates
+
+Amazn AI demonstrates practical experience with:
 
 * Data preprocessing
 * Document processing
-* Embeddings
+* Embedding generation
 * Vector databases
-* Semantic retrieval
+* Semantic search
 * Retrieval-Augmented Generation
 * LLM integration
-* Agentic tool calling
+* Agentic AI
+* Tool calling
 * Multi-tool orchestration
-* API integration
+* Google API integration
+* External data retrieval
 * Streamlit application development
+* Environment and secret management
 * AI application deployment
+
+---
+
+## Future Improvements
+
+Although the current project is complete, possible future improvements include:
+
+* More advanced retrieval and reranking
+* Better evaluation of retrieval quality
+* Conversation memory
+* Structured tool outputs
+* Improved agent observability
+* Automated evaluation datasets
+* More production-grade monitoring
 
 ---
 
