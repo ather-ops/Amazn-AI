@@ -1,304 +1,175 @@
 <p align="center">
-  <img src="https://github.com/ather-ops/Amazn-AI/blob/main/Assets/Amazn.png" alt="Amazn AI Banner" width="100%">
+  <img src="https://raw.githubusercontent.com/ather-ops/Amazn-AI/main/Assets/amazn-cover.png" alt="Amazn AI Cover" width="100%">
 </p>
 
 <h1 align="center">Amazn AI</h1>
 
 <p align="center">
-  An agentic AI customer-support assistant powered by RAG, semantic search, and live order lookup.
+  <b>A multi-tool agentic AI assistant that searches products, answers support questions, and tracks live orders, all from one chat.</b>
 </p>
 
 <p align="center">
-  Product RAG &nbsp;|&nbsp; Support RAG &nbsp;|&nbsp; Google Sheets Order Lookup &nbsp;|&nbsp; smolagents
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Agent-smolagents-FF6F00" alt="smolagents">
+  <img src="https://img.shields.io/badge/Vector%20DB-FAISS-0467DF" alt="FAISS">
+  <img src="https://img.shields.io/badge/LLM-Groq-F55036" alt="Groq">
+  <img src="https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit">
+  <img src="https://img.shields.io/badge/Status-Deployed-2EA44F" alt="Deployed">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="MIT License">
+</p>
+
+<p align="center">
+  <a href="YOUR_STREAMLIT_APP_URL"><b>Live Demo</b></a> &nbsp;•&nbsp;
+  <a href="#architecture">Architecture</a> &nbsp;•&nbsp;
+  <a href="#what-this-project-demonstrates">Skills</a> &nbsp;•&nbsp;
+  <a href="#run-it-locally">Run Locally</a>
 </p>
 
 ---
 
-## Live Demo
+## TL;DR (for recruiters and hiring managers)
 
-Amazn AI is deployed and available as a live Streamlit application.
+| | |
+|---|---|
+| **What it is** | An end-to-end, deployed AI application with an LLM agent that routes each question to the right tool |
+| **Tools the agent orchestrates** | Product RAG, Support RAG (134-page knowledge base), live order lookup via Google Sheets |
+| **Standout capability** | Multi-tool reasoning: one question can trigger several tools and return one combined answer |
+| **Stack** | Python, smolagents, FAISS, Sentence Transformers, Groq (via LiteLLM), Google Sheets API, Streamlit |
+| **Shipped?** | Yes. Deployed on Streamlit Cloud with secrets managed outside the repo |
 
-Live App: Amazn AI
+> **Try asking:** *"Where is order ORD1026 and can I return the product?"*
+> The agent looks up the order in Google Sheets, retrieves the return policy from the support knowledge base, and answers in a single response.
 
 ---
 
-## Overview
+## Why This Project Matters
 
-Amazn AI is an end-to-end agentic AI application designed to handle Amazon-style product and customer-support queries through multiple specialized tools.
+Most RAG demos are a single retrieval pipeline behind a chat box. Real customer-support systems are not: they need product knowledge, policy knowledge, **and** live operational data.
 
-Instead of using a single retrieval pipeline for every question, Amazn AI uses a `smolagents` CodeAgent to determine which tool should handle the user's request.
+Amazn AI shows how to build that properly:
 
-The current system provides three core capabilities:
-
-1. Product discovery using Product RAG
-2. Customer-support assistance using Support RAG
-3. Live order information using Google Sheets
-
-The project demonstrates how multiple AI tools can be combined into a single conversational application.
+- **Agentic routing** instead of one-size-fits-all retrieval
+- **Separate knowledge bases** for products and support, each with its own index
+- **Live data** (orders) fetched at query time rather than baked into static embeddings
+- **Production concerns** handled: secrets, read-only credentials, and deployment
 
 ---
 
 ## Key Features
 
-### Product RAG
+### Product RAG: semantic product discovery
+Natural-language search over an Amazon product dataset.
 
-A semantic product-search system built over an Amazon product dataset.
-
-The pipeline includes:
-
-* Product data cleaning
-* Product document creation
-* Sentence Transformers embeddings
-* FAISS vector search
-* Semantic retrieval
-* LLM-generated responses
-
-Example query:
+- Data cleaning and product document creation
+- Sentence Transformers embeddings + FAISS vector search
+- LLM-generated answers grounded in retrieved products
 
 ```text
 Find the best products under ₹4,000
 ```
 
----
+### Support RAG: policy and help answers
+A dedicated pipeline over a **134-page** Amazon-style support knowledge base.
 
-### Support RAG
-
-A dedicated customer-support RAG pipeline built over a 134-page Amazon-style support knowledge base.
-
-The pipeline includes:
-
-* PDF text extraction using PyMuPDF
-* Page-aware document processing
-* Text cleaning
-* Fixed-size chunking with overlap
-* Sentence Transformers embeddings
-* FAISS similarity search
-* Retrieved-context generation
-
-Example queries:
+- PDF extraction with PyMuPDF (page-aware)
+- Text cleaning and fixed-size chunking with overlap
+- Sentence Transformers embeddings + FAISS similarity search
+- Answers generated from retrieved context
 
 ```text
 I received a damaged product. Can I return it?
-```
-
-```text
-How can I return a product?
-```
-
-```text
 How long does a refund take?
 ```
 
-The support knowledge base used in this project is a compiled Amazon-style reference document and should not be treated as an official or live Amazon policy source.
+> The support knowledge base is a compiled Amazon-style reference document. It is **not** an official or live Amazon policy source.
 
----
+### Live Order Lookup: Google Sheets integration
+A read-only Google Sheets tool gives the agent real-time order data instead of static RAG content.
 
-### Google Sheets Order Lookup
-
-A read-only Google Sheets integration provides live order information to the agent.
-
-The order tool can retrieve information such as:
-
-* Order ID
-* Customer name
-* Product ID
-* Product name
-* Order date
-* Order status
-* Expected delivery
-* Payment status
-* Delivery address
-* Tracking ID
-
-Example:
+Returns: Order ID, customer name, product ID/name, order date, status, expected delivery, payment status, delivery address, tracking ID.
 
 ```text
 Where is my order ORD1026?
 ```
 
-The agent can retrieve the order directly from the connected Google Sheet instead of relying on static RAG data.
-
 ---
 
-## Agentic Architecture
+## Architecture
 
-The central component of Amazn AI is a `smolagents` CodeAgent.
+### Agent and tool routing
 
-```text
-                         User
-                           |
-                           v
-                    Streamlit Chat UI
-                           |
-                           v
-                    smolagents Agent
-                           |
-          +----------------+----------------+
-          |                |                |
-          v                v                v
-   Product Search    Support Search    Order Lookup
-          |                |                |
-          v                v                v
-      Product RAG       Support RAG     Google Sheets
-          |                |                |
-          v                v                v
-     FAISS Index       FAISS Index      Live Orders
-          |                |                |
-          +----------------+----------------+
-                           |
-                           v
-                      LLM Response
-                           |
-                           v
-                          User
+A `smolagents` **CodeAgent** reads the user's request, decides which tool(s) to call, and composes the final answer.
+
+```mermaid
+flowchart TD
+    U[User] --> UI[Streamlit Chat UI]
+    UI --> A[smolagents CodeAgent]
+    A --> T1[Product Search Tool]
+    A --> T2[Support Search Tool]
+    A --> T3[Order Lookup Tool]
+    T1 --> P[(Product FAISS Index)]
+    T2 --> S[(Support FAISS Index)]
+    T3 --> G[(Google Sheets: Live Orders)]
+    P --> L[LLM Response - Groq]
+    S --> L
+    G --> L
+    L --> UI
 ```
 
-The agent decides which tool to use based on the user's request.
+### Multi-tool reasoning
 
-This allows Amazn AI to move beyond a single-purpose RAG chatbot toward a multi-tool AI system.
-
----
-
-## Multi-Tool Reasoning
-
-Amazn AI can combine tools when a question requires information from multiple sources.
-
-For example:
-
-```text
-Where is order ORD1026 and can I return the product?
+```mermaid
+flowchart LR
+    Q["Where is order ORD1026<br/>and can I return the product?"] --> A[Agent]
+    A --> O[Order Lookup<br/>Google Sheets]
+    A --> R[Support RAG<br/>Return policy]
+    O --> C[Combined answer]
+    R --> C
 ```
 
-The agent can use:
+### RAG pipelines
 
-```text
-Google Sheets
-     |
-     | Order information
-     v
-Order Lookup
-
-        +
-
-Support RAG
-     |
-     | Return information
-     v
-Support Knowledge Base
+```mermaid
+flowchart LR
+    subgraph Product RAG
+    A1[Product Dataset] --> A2[Cleaning] --> A3[Product Docs] --> A4[Embeddings] --> A5[FAISS] --> A6[Retrieval] --> A7[LLM]
+    end
 ```
 
-The retrieved information can then be combined into a single conversational response.
-
----
-
-## RAG Architecture
-
-### Product RAG
-
-```text
-Amazon Product Dataset
-        |
-        v
-Data Cleaning
-        |
-        v
-Product Documents
-        |
-        v
-Sentence Transformers
-        |
-        v
-Embeddings
-        |
-        v
-FAISS Index
-        |
-        v
-Semantic Retrieval
-        |
-        v
-Retrieved Product Context
-        |
-        v
-LLM
-        |
-        v
-Final Response
-```
-
-### Support RAG
-
-```text
-Support PDF
-        |
-        v
-PDF Text Extraction
-        |
-        v
-Text Cleaning
-        |
-        v
-Chunking
-        |
-        v
-Sentence Transformers
-        |
-        v
-Embeddings
-        |
-        v
-FAISS Index
-        |
-        v
-Semantic Retrieval
-        |
-        v
-Retrieved Support Context
-        |
-        v
-LLM
-        |
-        v
-Final Response
+```mermaid
+flowchart LR
+    subgraph Support RAG
+    B1[Support PDF] --> B2[Extraction] --> B3[Cleaning] --> B4[Chunking] --> B5[Embeddings] --> B6[FAISS] --> B7[Retrieval] --> B8[LLM]
+    end
 ```
 
 ---
 
 ## Technology Stack
 
-### Programming
+| Area | Tools |
+|---|---|
+| **Language and data** | Python, Pandas, NumPy |
+| **Retrieval and RAG** | Sentence Transformers, FAISS, PyMuPDF |
+| **Agent and LLM** | smolagents, LiteLLM, Groq |
+| **Integrations** | gspread, Google Auth, Google Sheets API |
+| **App and deployment** | Streamlit, Streamlit Cloud |
+| **Dev workflow** | Jupyter Notebook, Git, GitHub |
 
-* Python
-* Pandas
-* NumPy
+---
 
-### Retrieval and RAG
+## What This Project Demonstrates
 
-* Sentence Transformers
-* FAISS
-* PyMuPDF
-
-### Agent and LLM
-
-* smolagents
-* LiteLLM
-* Groq
-
-### Google Integration
-
-* gspread
-* Google Authentication
-* Google Sheets API
-
-### Application
-
-* Streamlit
-
-### Development
-
-* Jupyter Notebook
-* Git
-* GitHub
+| Skill area | Evidence in this repo |
+|---|---|
+| **Retrieval-Augmented Generation** | Two independent RAG pipelines with separate indexes |
+| **Vector search** | Embedding generation and FAISS indexing for products and support docs |
+| **Agentic AI and tool calling** | CodeAgent that selects and chains tools |
+| **Multi-tool orchestration** | Combined order + policy answers in one response |
+| **External API integration** | Read-only Google Sheets order lookup |
+| **Data and document processing** | Dataset cleaning, PDF extraction, chunking with overlap |
+| **Security hygiene** | Env-based secrets, read-only credentials, nothing sensitive committed |
+| **Shipping to production** | Streamlit UI, dependency config, cloud deployment |
 
 ---
 
@@ -306,94 +177,71 @@ Final Response
 
 ```text
 Amazn-AI/
-|
 ├── Assets/
-|   └── Amazn.png
-|
+│   ├── Amazn.png
+│   └── amazn-cover.png
 ├── data/
-|   ├── raw/
-|   |   ├── amazon.csv
-|   |   └── Amazon-Support.pdf
-|   |
-|   └── cleaned/
-|       └── amazon_cleaned.csv
-|
+│   ├── raw/
+│   │   ├── amazon.csv
+│   │   └── Amazon-Support.pdf
+│   └── cleaned/
+│       └── amazon_cleaned.csv
 ├── notebooks/
-|   ├── product-rag/
-|   |   └── EDA.ipynb
-|   |
-|   └── support-rag/
-|       └── Support-RAG.ipynb
-|
+│   ├── product-rag/EDA.ipynb
+│   └── support-rag/Support-RAG.ipynb
 ├── src/
-|   ├── agent.py
-|   ├── llm.py
-|   ├── orders.py
-|   ├── paths.py
-|   └── rag.py
-|
+│   ├── agent.py        # Agent + tool definitions
+│   ├── llm.py          # LLM configuration
+│   ├── orders.py       # Google Sheets order lookup
+│   ├── paths.py
+│   └── rag.py          # Product + support retrieval
 ├── vector_store/
-|   ├── product_index.faiss
-|   ├── product_documents.json
-|   ├── product_metadata.json
-|   ├── support_index.faiss
-|   └── support_chunks.json
-|
-├── app.py
-├── README.md
-└── requirements.txt
+│   ├── product_index.faiss
+│   ├── product_documents.json
+│   ├── product_metadata.json
+│   ├── support_index.faiss
+│   └── support_chunks.json
+├── app.py              # Streamlit app
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Environment Variables
+## Run It Locally
 
-Amazn AI requires environment configuration for the LLM and Google Sheets integration.
-
-```env
-GROQ_API_KEY=your_groq_api_key
-
-GOOGLE_CREDENTIALS_PATH=path/to/service-account.json
-
-GOOGLE_SHEET_ID=your_google_sheet_id
-```
-
-Google Sheets access is configured with read-only permissions.
-
-Credentials should never be committed to the repository.
-
----
-
-## Running Locally
-
-Clone the repository:
+**1. Clone**
 
 ```bash
 git clone https://github.com/ather-ops/Amazn-AI.git
 cd Amazn-AI
 ```
 
-Create and activate a virtual environment:
+**2. Create and activate a virtual environment**
 
 ```bash
 python -m venv .venv
+source .venv/Scripts/activate   # Windows Git Bash
+# source .venv/bin/activate     # macOS / Linux
 ```
 
-Windows Git Bash:
-
-```bash
-source .venv/Scripts/activate
-```
-
-Install dependencies:
+**3. Install dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Configure the required environment variables and Google service-account credentials.
+**4. Configure environment variables**
 
-Run the Streamlit application:
+```env
+GROQ_API_KEY=your_groq_api_key
+GOOGLE_CREDENTIALS_PATH=path/to/service-account.json
+GOOGLE_SHEET_ID=your_google_sheet_id
+```
+
+> Google Sheets access is **read-only**. Never commit credentials to the repository.
+
+**5. Launch**
 
 ```bash
 streamlit run app.py
@@ -403,102 +251,40 @@ streamlit run app.py
 
 ## Development Journey
 
-The project was built incrementally as an AI Engineering learning project.
+| Phase | What I built |
+|---|---|
+| **1. Product RAG** | Explored and cleaned the dataset, built product documents, embeddings, FAISS index, and LLM-connected retrieval |
+| **2. Support RAG** | Extracted page-aware PDF text, cleaned and chunked it, built the support index and retrieval flow |
+| **3. Agentic architecture** | Introduced smolagents, wrapped each pipeline as a tool, added Google Sheets order lookup, enabled agent routing |
+| **4. Deployment** | Built the Streamlit chat UI, configured production dependencies, secured Google Sheets access, deployed to Streamlit Cloud |
 
-### Phase 1: Product RAG
-
-* Explored the Amazon product dataset
-* Cleaned product data
-* Created product documents
-* Generated embeddings
-* Built a FAISS vector index
-* Implemented semantic retrieval
-* Connected retrieval with an LLM
-
-### Phase 2: Support RAG
-
-* Loaded the support PDF
-* Extracted page-aware text
-* Cleaned document content
-* Implemented chunking
-* Generated embeddings
-* Built a support FAISS index
-* Implemented support retrieval
-* Connected support retrieval with the LLM
-
-### Phase 3: Agentic Architecture
-
-* Introduced `smolagents`
-* Created the Product Search tool
-* Created the Support Search tool
-* Implemented agent-based tool routing
-* Added Google Sheets integration
-* Created the Order Lookup tool
-* Connected all three tools to the agent
-
-### Phase 4: Deployment
-
-* Built the Streamlit chat application
-* Configured production dependencies
-* Connected Google Sheets securely
-* Deployed the application to Streamlit Cloud
-* Tested the complete multi-tool workflow
+**Status:** Product RAG: Complete &nbsp;|&nbsp; Support RAG: Complete &nbsp;|&nbsp; Order Tool: Complete &nbsp;|&nbsp; Agent: Complete &nbsp;|&nbsp; Streamlit App: Complete &nbsp;|&nbsp; Deployed
 
 ---
 
-## Current Status
+## Roadmap
 
-Amazn AI is complete and deployed.
-
-```text
-Product RAG             Complete
-Support RAG             Complete
-Google Sheets Tool      Complete
-smolagents Agent        Complete
-Streamlit Application   Complete
-Deployment              Complete
-```
-
-The project is now considered a completed end-to-end AI Engineering project.
+- Retrieval reranking and quality evaluation
+- Conversation memory
+- Structured tool outputs
+- Agent observability and tracing
+- Automated evaluation datasets
+- Production-grade monitoring
 
 ---
 
-## What This Project Demonstrates
+## About the Author
 
-Amazn AI demonstrates practical experience with:
+Built by **Ather** as an end-to-end AI Engineering project, from raw data to a deployed, agent-driven application.
 
-* Data preprocessing
-* Document processing
-* Embedding generation
-* Vector databases
-* Semantic search
-* Retrieval-Augmented Generation
-* LLM integration
-* Agentic AI
-* Tool calling
-* Multi-tool orchestration
-* Google API integration
-* External data retrieval
-* Streamlit application development
-* Environment and secret management
-* AI application deployment
+- LinkedIn: [add your link](https://www.linkedin.com/in/YOUR_PROFILE)
+- Email: your.email@example.com
+- GitHub: [@ather-ops](https://github.com/ather-ops)
 
----
-
-## Future Improvements
-
-Although the current project is complete, possible future improvements include:
-
-* More advanced retrieval and reranking
-* Better evaluation of retrieval quality
-* Conversation memory
-* Structured tool outputs
-* Improved agent observability
-* Automated evaluation datasets
-* More production-grade monitoring
+*Open to AI/ML Engineering roles and collaborations.*
 
 ---
 
 ## License
 
-This project is released under the MIT License.
+Released under the [MIT License](LICENSE).
