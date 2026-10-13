@@ -1,25 +1,8 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ather-ops/Amazn-AI/main/Assets/Amazon%20AI_%20Futuristic%20Shopping%20Assistant.png" alt="Amazn AI - Futuristic Shopping Assistant" width="100%">
+</p>
+
 <h1 align="center">Amazn AI</h1>
-
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'fontFamily':'Arial, Helvetica, sans-serif','fontSize':'18px','primaryColor':'#16213A','primaryTextColor':'#FFFFFF','primaryBorderColor':'#FF9900','lineColor':'#FF9900','tertiaryColor':'#0A101F'}}}%%
-flowchart LR
-    Q(["User question"]) ==> A{{"AMAZN AI AGENT<br/>smolagents CodeAgent"}}
-    A ==> P["Product RAG<br/>semantic search + FAISS"]
-    A ==> S["Support RAG<br/>134-page knowledge base"]
-    A ==> O["Order Lookup<br/>live Google Sheets data"]
-    P ==> R(["One grounded answer"])
-    S ==> R
-    O ==> R
-
-    classDef user fill:#0A101F,stroke:#22D3EE,stroke-width:3px,color:#FFFFFF
-    classDef agent fill:#FF9900,stroke:#FFFFFF,stroke-width:3px,color:#0A101F,font-weight:bold
-    classDef tool fill:#16213A,stroke:#FF9900,stroke-width:2px,color:#FFFFFF
-    classDef answer fill:#0A101F,stroke:#A3E635,stroke-width:3px,color:#FFFFFF
-    class Q user
-    class A agent
-    class P,S,O tool
-    class R answer
-```
 
 <p align="center">
   <b>A multi-tool agentic AI assistant that searches products, answers support questions, and tracks live orders, all from one chat.</b>
@@ -36,7 +19,7 @@ flowchart LR
 </p>
 
 <p align="center">
-  <a href="YOUR_STREAMLIT_APP_URL"><b>Live Demo</b></a> &nbsp;•&nbsp;
+  <a href="https://amazn-agentic-ai.streamlit.app/"><b>Live Demo</b></a> &nbsp;•&nbsp;
   <a href="#architecture">Architecture</a> &nbsp;•&nbsp;
   <a href="#what-this-project-demonstrates">Skills</a> &nbsp;•&nbsp;
   <a href="#run-it-locally">Run Locally</a>
